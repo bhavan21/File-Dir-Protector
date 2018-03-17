@@ -68,7 +68,7 @@ def validate(password):
 	else:
 		return False
 
-def process(file,n):
+def processfile(file,n):
 	if sys.argv[2]=="e":
 		if encrypt(file,n):
 			print(file+" encrypted succesfully")
@@ -80,6 +80,14 @@ def process(file,n):
 		else:
 			print(file+" seems to be already decrypted")
 
+def processdir(path,n):
+	for file_or_dir in os.listdir(path):
+		file_or_dir = os.path.join(path, file_or_dir)
+		if os.path.isdir(file_or_dir):
+			processdir(file_or_dir,n)
+		if os.path.isfile(file_or_dir):
+			processfile(file_or_dir,n)
+
 password = getpass.getpass()
 if validate(password):
 	if len(sys.argv)<3:
@@ -87,13 +95,11 @@ if validate(password):
 		exit()
 	n = getInt(password)
 	if os.path.isfile(sys.argv[1]):
-		process(sys.argv[1],n)
+		processfile(sys.argv[1],n)
 		exit()
 	if os.path.isdir(sys.argv[1]):
 		path = sys.argv[1]
-		for file in os.listdir(path):
-			file = os.path.join(path, file)
-			process(file,n)
+		processdir(sys.argv[1],n)
 		exit()
 	print("Wrong file/dir path")
 else:
